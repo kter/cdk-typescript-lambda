@@ -1,19 +1,16 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-export class CdkTypescriptLambdaStack extends Stack {
+export class ShowIpStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const queue = new sqs.Queue(this, 'CdkTypescriptLambdaQueue', {
-      visibilityTimeout: Duration.seconds(300)
+    new NodejsFunction(this, 'lambda', {
+      entry: 'lambda/showip.ts',
+      handler: 'handler',
+      runtime: Runtime.NODEJS_20_X,
     });
-
-    const topic = new sns.Topic(this, 'CdkTypescriptLambdaTopic');
-
-    topic.addSubscription(new subs.SqsSubscription(queue));
   }
 }
